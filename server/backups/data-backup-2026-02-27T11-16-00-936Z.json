@@ -1,0 +1,199 @@
+{
+  "users": [
+    {
+      "id": "e25bf604-c524-4bb4-81c9-c5bc6f6f3de3",
+      "email": "admin@B50trade.com",
+      "username": "SuperAdmin",
+      "password_hash": "$2a$10$PROv0CQOu2mEti7hAMens.gnxx2EpRuLkvl4L580EBkPa9aTYnxuy",
+      "role": "superadmin",
+      "permissions": {
+        "canBanUsers": true,
+        "canAdjustBalance": true,
+        "canSeizeFunds": true,
+        "canManageWithdrawals": true
+      },
+      "two_factor": {
+        "enabled": false,
+        "secret": null
+      },
+      "status": "active",
+      "risk_score": 0,
+      "created_at": "2026-02-27T10:18:30.142Z",
+      "last_seen": "2026-02-27T10:51:43.030Z",
+      "is_online": false,
+      "current_socket": null
+    },
+    {
+      "id": "8ec3af5f-07b1-46fc-8f26-020b0de42dc4",
+      "email": "monwubabenedict07@gmail.com",
+      "username": "BEN",
+      "password_hash": "$2a$10$L6FzvSLVcjMcavCNu8CJQ.6xL6UDpmAyvlW/qKUNBK.Sbu9Uksc5q",
+      "role": "user",
+      "permissions": {},
+      "two_factor": {
+        "enabled": false,
+        "secret": null
+      },
+      "status": "active",
+      "accountStatus": "active",
+      "freezeUntil": null,
+      "freezeReason": null,
+      "loginAttempts": 0,
+      "risk_score": 0,
+      "created_at": "2026-02-27T10:31:48.053Z",
+      "last_seen": "2026-02-27T11:07:03.987Z",
+      "is_online": false,
+      "current_socket": null
+    }
+  ],
+  "wallets": [
+    {
+      "id": "beff50a8-4f5f-4673-8e5a-70cee1c835f1",
+      "user_id": "e25bf604-c524-4bb4-81c9-c5bc6f6f3de3",
+      "demo_balance": 1000000,
+      "savings_balance": 0,
+      "available_balance": 1000000,
+      "frozen_balance": 0
+    },
+    {
+      "id": "56cb29f3-876d-446a-ab7b-23e232f9287c",
+      "user_id": "0f2488fd-65e4-428d-8ed0-60440e45e419",
+      "demo_balance": 500,
+      "savings_balance": 0,
+      "available_balance": 500,
+      "frozen_balance": 0
+    },
+    {
+      "id": "fae54410-71f7-4310-a705-4b3d887b5712",
+      "user_id": "8ec3af5f-07b1-46fc-8f26-020b0de42dc4",
+      "demo_balance": 400,
+      "savings_balance": 0,
+      "available_balance": 500,
+      "frozen_balance": 0
+    }
+  ],
+  "crypto_balances": [],
+  "transactions": [],
+  "withdrawal_requests": [],
+  "reports": [],
+  "positions": [],
+  "trades": [
+    {
+      "id": "585fbfcc-b8c7-44f4-89dc-fb8209660cce",
+      "user_id": "8ec3af5f-07b1-46fc-8f26-020b0de42dc4",
+      "asset": "BTCUSDT",
+      "direction": "buy",
+      "amount": 100,
+      "leverage": 25,
+      "entry_price": 66826.5,
+      "close_price": 66823.7,
+      "profit_loss": -7000,
+      "status": "closed",
+      "tp_price": 67800,
+      "sl_price": 65000,
+      "created_at": "2026-02-27T10:38:25.005Z",
+      "closed_at": "2026-02-27T10:38:27.729Z",
+      "exit_reason": "LIQUIDATION"
+    }
+  ],
+  "payments": [],
+  "audit_logs": [],
+  "security_logs": [
+    {
+      "id": "91aa5351-35d5-4de0-9f9e-aed3c558bce3",
+      "event_type": "SUCCESSFUL_LOGIN",
+      "details": "User logged in: admin@B50trade.com",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "e25bf604-c524-4bb4-81c9-c5bc6f6f3de3",
+      "created_at": "2026-02-27T10:20:38.584Z"
+    }
+  ],
+  "activity_stream": [
+    {
+      "id": "b28ffda7-e134-42ab-8099-2b6854d0a9d6",
+      "event_type": "LIQUIDATION",
+      "user_id": "8ec3af5f-07b1-46fc-8f26-020b0de42dc4",
+      "email": "monwubabenedict07@gmail.com",
+      "username": "BEN",
+      "details": "Position closed via LIQUIDATION on BTCUSDT at $66822.2",
+      "ip_address": "System",
+      "created_at": "2026-02-27T10:38:27.778Z"
+    },
+    {
+      "id": "6c70fb2b-580d-4dbd-a9e4-59a97fda652a",
+      "event_type": "TRADE_OPENED",
+      "user_id": "8ec3af5f-07b1-46fc-8f26-020b0de42dc4",
+      "email": "monwubabenedict07@gmail.com",
+      "username": "BEN",
+      "details": "Opened BUY $100 x25 BTCUSDT",
+      "ip_address": "::ffff:127.0.0.1",
+      "created_at": "2026-02-27T10:38:25.028Z"
+    },
+    {
+      "id": "41148478-5831-4a85-ab3d-6e9974b598d2",
+      "event_type": "USER_REGISTERED",
+      "user_id": "8ec3af5f-07b1-46fc-8f26-020b0de42dc4",
+      "email": "monwubabenedict07@gmail.com",
+      "username": "BEN",
+      "details": "Account verified: monwubabenedict07@gmail.com",
+      "ip_address": "::ffff:127.0.0.1",
+      "created_at": "2026-02-27T10:32:19.477Z"
+    },
+    {
+      "id": "1a70bf6e-233e-4e04-ac44-3eee4f195a90",
+      "event_type": "USER_LOGGED_IN",
+      "user_id": "e25bf604-c524-4bb4-81c9-c5bc6f6f3de3",
+      "email": "admin@B50trade.com",
+      "username": "SuperAdmin",
+      "details": "User logged in",
+      "ip_address": "::ffff:127.0.0.1",
+      "created_at": "2026-02-27T10:20:38.594Z"
+    }
+  ],
+  "financial_transactions": [],
+  "alerts": [
+    {
+      "id": "59330cfb-9766-4201-a58c-0a8c9e5fb629",
+      "type": "HIGH_LEVERAGE",
+      "severity": "HIGH",
+      "userId": "8ec3af5f-07b1-46fc-8f26-020b0de42dc4",
+      "relatedTradeId": "585fbfcc-b8c7-44f4-89dc-fb8209660cce",
+      "message": "User opened a 25x leveraged trade on BTCUSDT",
+      "metadata": {
+        "asset": "BTCUSDT",
+        "direction": "buy",
+        "leverage": 25,
+        "amount": 100
+      },
+      "status": "OPEN",
+      "resolvedBy": null,
+      "resolvedAt": null,
+      "createdAt": "2026-02-27T10:38:25.015Z",
+      "updatedAt": "2026-02-27T10:38:25.015Z"
+    }
+  ],
+  "settings": {
+    "maintenanceMode": false,
+    "trading_halt": false
+  },
+  "notifications": [
+    {
+      "id": "d12d9fbd-06fc-4d24-8124-40d4d8edcfa3",
+      "title": "warning ",
+      "message": "you mind shold dey",
+      "type": "error",
+      "target": "8ec3af5f-07b1-46fc-8f26-020b0de42dc4",
+      "timestamp": "2026-02-27T10:52:14.789Z",
+      "read": true
+    },
+    {
+      "id": "afaf2145-d6ea-49f7-856c-29e6f496222e",
+      "title": "your trade ",
+      "message": "hello, how is your trade going ✅🤣",
+      "type": "info",
+      "target": "8ec3af5f-07b1-46fc-8f26-020b0de42dc4",
+      "timestamp": "2026-02-27T10:53:30.923Z",
+      "read": true
+    }
+  ]
+}
