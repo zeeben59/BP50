@@ -27,8 +27,9 @@ const AdminProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children
   // If already logged in and is an admin, grant access directly.
   if (isLoggedIn && isAdmin) return <>{children}</>;
   
-  // If logged in but NOT an admin, throw them to the unauthorized screen.
-  if (isLoggedIn && !isAdmin) return <Navigate to="/unauthorized" replace />;
+  // If logged in but NOT an admin, we stay here and show the login form,
+  // but we can optionally show a message that the current account is insufficient.
+  const isInsufficient = isLoggedIn && !isAdmin;
 
   // If NOT logged in, show the standalone Admin Login form.
   const handleSubmit = async (e: React.FormEvent) => {
@@ -142,10 +143,10 @@ const AdminProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children
               </div>
             )}
 
-            {error && (
+            {(error || isInsufficient) && (
               <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm animate-in fade-in slide-in-from-top-2 duration-200">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-                {error}
+                {error || "Your current account does not have administrative privileges. Please sign in with an authorized account."}
               </div>
             )}
 
