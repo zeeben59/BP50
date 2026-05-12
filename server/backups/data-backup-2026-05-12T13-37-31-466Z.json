@@ -1,0 +1,653 @@
+{
+  "users": [
+    {
+      "id": "20ce88c1-0d77-4472-a715-71fc10de5545",
+      "email": "admin@B50trade.com",
+      "username": "SuperAdmin",
+      "password_hash": "$2a$10$5x8iT9cOiSQ1aORWWV44IesqICdebtUsCDeNdF1XELO3FqCNc5GC2",
+      "role": "superadmin",
+      "permissions": {
+        "canBanUsers": true,
+        "canAdjustBalance": true,
+        "canSeizeFunds": true,
+        "canManageWithdrawals": true
+      },
+      "two_factor": {
+        "enabled": false,
+        "secret": null
+      },
+      "status": "active",
+      "risk_score": 0,
+      "created_at": "2026-03-24T11:58:25.761Z",
+      "last_seen": "2026-03-25T12:02:26.560Z",
+      "is_online": false,
+      "current_socket": null
+    },
+    {
+      "id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "email": "monwubabenedict07@gmail.com",
+      "username": "zee",
+      "password_hash": "$2a$10$3V6B4E9VP6xiY6aL6FKHz.jsJ/ff8wm3mE659gUuSSyedhDQKuJk6",
+      "role": "user",
+      "permissions": {},
+      "two_factor": {
+        "enabled": false,
+        "secret": null
+      },
+      "status": "banned",
+      "accountStatus": "suspended",
+      "freezeUntil": null,
+      "freezeReason": null,
+      "loginAttempts": 0,
+      "risk_score": 0,
+      "created_at": "2026-03-24T12:08:50.035Z",
+      "last_seen": "2026-03-24T13:16:31.286Z",
+      "is_online": false,
+      "current_socket": null
+    }
+  ],
+  "wallets": [
+    {
+      "id": "99803dad-8cc6-4c0e-9b76-c38fdfe1d91a",
+      "user_id": "20ce88c1-0d77-4472-a715-71fc10de5545",
+      "demo_balance": 995875,
+      "savings_balance": 0,
+      "available_balance": 1000000,
+      "frozen_balance": 0
+    },
+    {
+      "id": "74f0842a-8670-4d74-b730-c97f25ada9c5",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "demo_balance": 100,
+      "savings_balance": 0,
+      "available_balance": 600,
+      "frozen_balance": 0
+    }
+  ],
+  "crypto_balances": [],
+  "transactions": [
+    {
+      "id": "d7e725c5-4e04-416a-bc7d-6af683465667",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "type": "admin_deposit",
+      "symbol": "USD",
+      "amount": 100,
+      "price": 1,
+      "total": 100,
+      "status": "completed",
+      "realized_pnl": 0,
+      "created_at": "2026-03-24T13:21:09.251Z"
+    }
+  ],
+  "withdrawal_requests": [],
+  "reports": [],
+  "positions": [],
+  "trades": [
+    {
+      "id": "de4d78d3-9d49-40f8-9b12-17bfe574e2d1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "asset": "BTCUSDT",
+      "direction": "buy",
+      "amount": 125,
+      "leverage": 10,
+      "entry_price": 70960.7,
+      "close_price": 70960.7,
+      "profit_loss": 0,
+      "status": "closed",
+      "tp_price": null,
+      "sl_price": null,
+      "created_at": "2026-03-24T12:36:34.167Z",
+      "closed_at": "2026-03-24T12:36:42.880Z"
+    },
+    {
+      "id": "5114edae-483f-442d-bae8-06f4a110bcc0",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "asset": "BTCUSDT",
+      "direction": "sell",
+      "amount": 250,
+      "leverage": 25,
+      "entry_price": 70878.3,
+      "close_price": 70906.5,
+      "profit_loss": -176250,
+      "status": "closed",
+      "tp_price": null,
+      "sl_price": null,
+      "created_at": "2026-03-24T12:37:22.447Z",
+      "closed_at": "2026-03-24T12:37:22.771Z",
+      "exit_reason": "LIQUIDATION"
+    }
+  ],
+  "payments": [],
+  "audit_logs": [
+    {
+      "id": "1d708c65-04c6-4ebf-8888-3bf2b774860d",
+      "admin_id": "20ce88c1-0d77-4472-a715-71fc10de5545",
+      "action": "ADJUST_BALANCE",
+      "target_user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "reason": "monwubabenedict07@gmail.com",
+      "before_state": "{\"available_balance\":500,\"total_balance\":0}",
+      "after_state": "{\"available_balance\":600,\"total_balance\":100,\"change\":100}",
+      "created_at": "2026-03-24T13:21:09.269Z"
+    },
+    {
+      "id": "3bae1aa5-b290-41fe-addc-4405fce44b5c",
+      "admin_id": "20ce88c1-0d77-4472-a715-71fc10de5545",
+      "action": "UPDATE_USER_STATUS",
+      "target_user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "reason": "scammer",
+      "before_state": "{\"status\":\"active\",\"accountStatus\":\"active\"}",
+      "after_state": "{\"status\":\"banned\",\"accountStatus\":\"suspended\"}",
+      "created_at": "2026-03-24T13:21:15.170Z"
+    }
+  ],
+  "security_logs": [
+    {
+      "id": "b8c83e67-6c08-454c-98ea-5c140660ad06",
+      "event_type": "SUCCESSFUL_LOGIN",
+      "details": "User logged in: admin@b50trade.com",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "20ce88c1-0d77-4472-a715-71fc10de5545",
+      "created_at": "2026-03-24T12:05:45.296Z"
+    },
+    {
+      "id": "3e622a99-742b-40a2-934a-684f5e3020b4",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:13:08.021Z"
+    },
+    {
+      "id": "6d728519-2bfb-40bc-bdc6-eeab498748be",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:13:08.022Z"
+    },
+    {
+      "id": "2719abdd-ebb8-4d29-8878-4706ab6aafa1",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:13:08.033Z"
+    },
+    {
+      "id": "ca574262-3c12-4607-baf4-0d919257a2ac",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:13:09.418Z"
+    },
+    {
+      "id": "d706ab58-43b4-4d23-b89d-bbfec5e3e777",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:13:09.458Z"
+    },
+    {
+      "id": "86b9a088-2d89-438a-bf24-2c5002e8a938",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:13:09.506Z"
+    },
+    {
+      "id": "e6064ea1-78b4-4604-9c4c-7b6a42c4665b",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:14:32.751Z"
+    },
+    {
+      "id": "28773453-da1e-44a6-850b-d20bc7673c3f",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:14:32.775Z"
+    },
+    {
+      "id": "6e36c492-de75-4057-b006-a3b0f8b79f9f",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:14:32.777Z"
+    },
+    {
+      "id": "048079e0-ea22-4f75-9a9b-3b204549a121",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:19:49.855Z"
+    },
+    {
+      "id": "f9064b2e-816d-423f-9c03-50c48e6995b7",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:19:49.898Z"
+    },
+    {
+      "id": "6b250f2b-f641-4432-859a-1410bf4157ea",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:19:49.905Z"
+    },
+    {
+      "id": "6180025d-b951-46f7-b02a-dc81fa7f559f",
+      "event_type": "SUCCESSFUL_LOGIN",
+      "details": "User logged in: monwubabenedict07@gmail.com",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:21:20.127Z"
+    },
+    {
+      "id": "11ddfe69-6ba0-4a55-8825-a1c882d86c18",
+      "event_type": "SUCCESSFUL_LOGIN",
+      "details": "User logged in: monwubabenedict07@gmail.com",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:27:19.262Z"
+    },
+    {
+      "id": "ffb38e44-a772-4b75-80f3-44c958d9b8ac",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:31:06.834Z"
+    },
+    {
+      "id": "f21c909a-f297-4415-a6f1-1a0e10ff616e",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:31:06.973Z"
+    },
+    {
+      "id": "31194b6e-d6de-4a84-93e0-8d6de1a60311",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:31:06.976Z"
+    },
+    {
+      "id": "d4f10f47-76bc-479e-9c14-584bb7ca20fb",
+      "event_type": "SUCCESSFUL_LOGIN",
+      "details": "User logged in: monwubabenedict07@gmail.com",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:33:51.647Z"
+    },
+    {
+      "id": "9ed30501-4d00-4a29-b0d0-cd1e790c139b",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:37:48.145Z"
+    },
+    {
+      "id": "500f7847-0859-42f9-9538-c594615f40ca",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:37:48.146Z"
+    },
+    {
+      "id": "d874bdac-94ca-490a-abf2-498bfd5825d3",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:37:48.172Z"
+    },
+    {
+      "id": "dc3f16a5-64bb-4a87-87b4-6d5370fe4795",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:37:49.753Z"
+    },
+    {
+      "id": "c5459f5f-cf3c-4424-bdeb-a3fb65eb08bb",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:37:49.754Z"
+    },
+    {
+      "id": "248bb4f7-169c-4611-89e4-9bbef0f87eef",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:37:51.825Z"
+    },
+    {
+      "id": "5d6a0031-cf8d-43f7-abed-c180afd03962",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:37:51.827Z"
+    },
+    {
+      "id": "f6f8f3bd-121b-433a-a653-2d4da556872c",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:37:52.741Z"
+    },
+    {
+      "id": "6f2c4422-18e3-4c91-9f84-8209c7bbd479",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin,moderator",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:37:55.862Z"
+    },
+    {
+      "id": "e3ae3b59-8ad4-450c-9197-440df82886be",
+      "event_type": "UNAUTHORIZED_ACCESS_ATTEMPT",
+      "details": "Role user attempted to access route restricted to superadmin,admin",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T12:37:55.872Z"
+    },
+    {
+      "id": "212445b6-3b41-4f26-86db-19e790e01303",
+      "event_type": "FAILED_LOGIN",
+      "details": "Invalid password for: admin@b50trade.com",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "20ce88c1-0d77-4472-a715-71fc10de5545",
+      "created_at": "2026-03-24T13:17:39.843Z"
+    },
+    {
+      "id": "fd7a3c32-4a83-4b64-bb5b-aafd1f157e2c",
+      "event_type": "FAILED_LOGIN",
+      "details": "Invalid password for: admin@b50trade.com",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "20ce88c1-0d77-4472-a715-71fc10de5545",
+      "created_at": "2026-03-24T13:17:42.046Z"
+    },
+    {
+      "id": "66066f5d-7c3f-4e82-a632-6c1073cff961",
+      "event_type": "SUCCESSFUL_LOGIN",
+      "details": "User logged in: admin@b50trade.com",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "20ce88c1-0d77-4472-a715-71fc10de5545",
+      "created_at": "2026-03-24T13:17:46.337Z"
+    },
+    {
+      "id": "10320e1b-6f7b-49dd-bf3f-3580d1012783",
+      "event_type": "FAILED_ADMIN_REAUTH",
+      "details": "Failed double-confirmation for balance adjustment",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "20ce88c1-0d77-4472-a715-71fc10de5545",
+      "created_at": "2026-03-24T13:20:58.248Z"
+    },
+    {
+      "id": "700ed995-5d2c-4749-9890-e8c484607a7d",
+      "event_type": "FAILED_LOGIN",
+      "details": "Attempted login to inactive account: monwubabenedict07@gmail.com (banned)",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "created_at": "2026-03-24T13:21:32.791Z"
+    },
+    {
+      "id": "cf1fd6a1-4f45-4ed6-ba1c-b4b029f70526",
+      "event_type": "SUCCESSFUL_LOGIN",
+      "details": "User logged in: admin@b50trade.com",
+      "ip_address": "::ffff:127.0.0.1",
+      "user_id": "20ce88c1-0d77-4472-a715-71fc10de5545",
+      "created_at": "2026-03-24T13:25:46.663Z"
+    }
+  ],
+  "activity_stream": [
+    {
+      "id": "edae0022-f5fb-4a8f-91ca-ff36da3d45d8",
+      "event_type": "TRADE_OPENED",
+      "user_id": "20ce88c1-0d77-4472-a715-71fc10de5545",
+      "email": "admin@B50trade.com",
+      "username": "SuperAdmin",
+      "details": "Opened BUY $250 x25 BTCUSDT",
+      "ip_address": "::ffff:127.0.0.1",
+      "created_at": "2026-03-25T10:53:17.075Z"
+    },
+    {
+      "id": "52a00a0f-3ebc-411c-9f44-e9d98e9695da",
+      "event_type": "USER_LOGGED_IN",
+      "user_id": "20ce88c1-0d77-4472-a715-71fc10de5545",
+      "email": "admin@B50trade.com",
+      "username": "SuperAdmin",
+      "details": "User logged in",
+      "ip_address": "::ffff:127.0.0.1",
+      "created_at": "2026-03-24T13:25:46.681Z"
+    },
+    {
+      "id": "45316430-db49-4fbd-85e0-8896d48bf689",
+      "event_type": "USER_LOGGED_IN",
+      "user_id": "20ce88c1-0d77-4472-a715-71fc10de5545",
+      "email": "admin@B50trade.com",
+      "username": "SuperAdmin",
+      "details": "User logged in",
+      "ip_address": "::ffff:127.0.0.1",
+      "created_at": "2026-03-24T13:17:46.345Z"
+    },
+    {
+      "id": "8a0a1f66-dc37-435d-b885-37bef65e4048",
+      "event_type": "LIQUIDATION",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "email": "monwubabenedict07@gmail.com",
+      "username": "zee",
+      "details": "Position closed via LIQUIDATION on BTCUSDT at $70906.5",
+      "ip_address": "System",
+      "created_at": "2026-03-24T12:37:22.773Z"
+    },
+    {
+      "id": "0e21456c-0e35-43b2-bbce-b9e98f60c62e",
+      "event_type": "TRADE_OPENED",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "email": "monwubabenedict07@gmail.com",
+      "username": "zee",
+      "details": "Opened SELL $250 x25 BTCUSDT",
+      "ip_address": "::ffff:127.0.0.1",
+      "created_at": "2026-03-24T12:37:22.479Z"
+    },
+    {
+      "id": "0a322896-13b3-4ef4-86fb-313b040f6e04",
+      "event_type": "TRADE_CLOSED",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "email": "monwubabenedict07@gmail.com",
+      "username": "zee",
+      "details": "Closed BUY BTCUSDT (P&L: $0)",
+      "ip_address": "::ffff:127.0.0.1",
+      "created_at": "2026-03-24T12:36:42.917Z"
+    },
+    {
+      "id": "eabf21e5-4ddc-433e-a85d-73fdca843f82",
+      "event_type": "TRADE_OPENED",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "email": "monwubabenedict07@gmail.com",
+      "username": "zee",
+      "details": "Opened BUY $125 x10 BTCUSDT",
+      "ip_address": "::ffff:127.0.0.1",
+      "created_at": "2026-03-24T12:36:34.463Z"
+    },
+    {
+      "id": "73ea20c5-7e63-4975-9bde-65c7fe38fd85",
+      "event_type": "LIQUIDATION",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "email": "monwubabenedict07@gmail.com",
+      "username": "zee",
+      "details": "Position closed via LIQUIDATION on BTCUSDT at $70924.2",
+      "ip_address": "System",
+      "created_at": "2026-03-24T12:35:13.470Z"
+    },
+    {
+      "id": "10357587-a7c5-4450-93d1-9f9daac5d39f",
+      "event_type": "TRADE_OPENED",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "email": "monwubabenedict07@gmail.com",
+      "username": "zee",
+      "details": "Opened BUY $250 x100 BTCUSDT",
+      "ip_address": "::ffff:127.0.0.1",
+      "created_at": "2026-03-24T12:35:13.165Z"
+    },
+    {
+      "id": "78af6521-ca44-4e2f-8a56-37d7707ab66c",
+      "event_type": "USER_LOGGED_IN",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "email": "monwubabenedict07@gmail.com",
+      "username": "zee",
+      "details": "User logged in",
+      "ip_address": "::ffff:127.0.0.1",
+      "created_at": "2026-03-24T12:33:51.660Z"
+    },
+    {
+      "id": "8ce85e8d-b169-4ed9-bea9-3871b413c731",
+      "event_type": "USER_LOGGED_IN",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "email": "monwubabenedict07@gmail.com",
+      "username": "zee",
+      "details": "User logged in",
+      "ip_address": "::ffff:127.0.0.1",
+      "created_at": "2026-03-24T12:27:19.314Z"
+    },
+    {
+      "id": "aa3a1d61-afd5-4509-8740-ba3231a6a860",
+      "event_type": "USER_LOGGED_IN",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "email": "monwubabenedict07@gmail.com",
+      "username": "zee",
+      "details": "User logged in",
+      "ip_address": "::ffff:127.0.0.1",
+      "created_at": "2026-03-24T12:21:20.349Z"
+    },
+    {
+      "id": "6ccddcbc-8ed9-4b5d-ad75-39be93cb7ca1",
+      "event_type": "USER_REGISTERED",
+      "user_id": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "email": "monwubabenedict07@gmail.com",
+      "username": "zee",
+      "details": "Account verified: monwubabenedict07@gmail.com",
+      "ip_address": "::ffff:127.0.0.1",
+      "created_at": "2026-03-24T12:09:27.465Z"
+    },
+    {
+      "id": "5464b1c4-225f-4a15-b241-e04aefcb6652",
+      "event_type": "USER_LOGGED_IN",
+      "user_id": "20ce88c1-0d77-4472-a715-71fc10de5545",
+      "email": "admin@B50trade.com",
+      "username": "SuperAdmin",
+      "details": "User logged in",
+      "ip_address": "::ffff:127.0.0.1",
+      "created_at": "2026-03-24T12:05:45.310Z"
+    }
+  ],
+  "financial_transactions": [],
+  "alerts": [
+    {
+      "id": "79a8fb71-5c70-4e1f-9f2f-77a7b66e06ac",
+      "type": "HIGH_LEVERAGE",
+      "severity": "HIGH",
+      "userId": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "relatedTradeId": "832674e5-f228-4ea0-85aa-54716ca741c7",
+      "message": "User opened a 100x leveraged trade on BTCUSDT",
+      "metadata": {
+        "asset": "BTCUSDT",
+        "direction": "buy",
+        "leverage": 100,
+        "amount": 250
+      },
+      "status": "OPEN",
+      "resolvedBy": null,
+      "resolvedAt": null,
+      "createdAt": "2026-03-24T12:35:13.120Z",
+      "updatedAt": "2026-03-24T12:35:13.120Z"
+    },
+    {
+      "id": "05f6f05d-a9d8-4b81-8abe-9ef590d171c3",
+      "type": "LIQUIDATION",
+      "severity": "CRITICAL",
+      "userId": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "relatedTradeId": "832674e5-f228-4ea0-85aa-54716ca741c7",
+      "message": "LIQUIDATION Hit: BUY 250x100 on BTCUSDT at 70924.2",
+      "metadata": {
+        "asset": "BTCUSDT",
+        "direction": "buy",
+        "amount": 250,
+        "leverage": 100,
+        "price": 70924.2,
+        "reason": "LIQUIDATION"
+      },
+      "status": "OPEN",
+      "resolvedBy": null,
+      "resolvedAt": null,
+      "createdAt": "2026-03-24T12:35:13.470Z",
+      "updatedAt": "2026-03-24T12:35:13.470Z"
+    },
+    {
+      "id": "67c6d6bd-0dd6-455a-814f-bf6a5dbe048f",
+      "type": "HIGH_LEVERAGE",
+      "severity": "HIGH",
+      "userId": "9dd0f440-3cae-43cb-80ff-afffd16dfebf",
+      "relatedTradeId": "5114edae-483f-442d-bae8-06f4a110bcc0",
+      "message": "User opened a 25x leveraged trade on BTCUSDT",
+      "metadata": {
+        "asset": "BTCUSDT",
+        "direction": "sell",
+        "leverage": 25,
+        "amount": 250
+      },
+      "status": "OPEN",
+      "resolvedBy": null,
+      "resolvedAt": null,
+      "createdAt": "2026-03-24T12:37:22.462Z",
+      "updatedAt": "2026-03-24T12:37:22.462Z"
+    },
+    {
+      "id": "291a10d4-29d4-4eb9-a967-a10f8e92e929",
+      "type": "HIGH_LEVERAGE",
+      "severity": "HIGH",
+      "userId": "20ce88c1-0d77-4472-a715-71fc10de5545",
+      "relatedTradeId": "b5d26853-c0b2-424a-be9d-093fab69d1e7",
+      "message": "User opened a 25x leveraged trade on BTCUSDT",
+      "metadata": {
+        "asset": "BTCUSDT",
+        "direction": "buy",
+        "leverage": 25,
+        "amount": 250
+      },
+      "status": "OPEN",
+      "resolvedBy": null,
+      "resolvedAt": null,
+      "createdAt": "2026-03-25T10:53:16.834Z",
+      "updatedAt": "2026-03-25T10:53:16.834Z"
+    }
+  ],
+  "notifications": [],
+  "settings": {
+    "maintenanceMode": false,
+    "trading_halt": false
+  }
+}
