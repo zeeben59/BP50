@@ -35,6 +35,8 @@ const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || '';
 const FLW_SECRET = process.env.FLW_SECRET_KEY || '';
 const GMAIL_USER = process.env.GMAIL_USER || '';
 const GMAIL_PASS = process.env.GMAIL_APP_PASSWORD || '';
+const IS_VERCEL = process.env.VERCEL === '1';
+const DISABLE_MARKET_WS = process.env.DISABLE_MARKET_WS === '1' || IS_VERCEL;
 
 const mailTransporter = nodemailer.createTransport({
   service: 'gmail',
@@ -619,6 +621,10 @@ let bybitReconnectTimer = null;
 let bybitPingInterval = null;
 
 function connectBybit() {
+  if (DISABLE_MARKET_WS) {
+    console.log('[Bybit] Skipped (DISABLE_MARKET_WS/VERCEL)');
+    return;
+  }
   const wsUrl = `wss://stream.bytick.com/v5/public/spot`;
   console.log('[Bybit] Connecting to WebSocket...');
 
@@ -700,6 +706,7 @@ function connectBybit() {
 }
 
 function scheduleReconnect() {
+  if (DISABLE_MARKET_WS) return;
   if (bybitReconnectTimer) return;
   bybitReconnectTimer = setTimeout(() => {
     bybitReconnectTimer = null;
@@ -2387,7 +2394,11 @@ setInterval(fetchCoinGeckoPrices, 300_000);
 httpServer.listen(PORT, () => {
   console.log(`✓ Server listening on http://localhost:${PORT}`);
   console.log(`✓ Socket.IO ready`);
-  console.log(`✓ Bybit WebSocket streaming targeted for ${SYMBOLS.length} pairs`);
+  if (DISABLE_MARKET_WS) {
+    console.log('! Bybit WebSocket disabled in this environment');
+  } else {
+    console.log(`✓ Bybit WebSocket streaming targeted for ${SYMBOLS.length} pairs`);
+  }
 });
 
 // ─── OPERATIONAL MONITORING ENDPOINTS ────────────────────────────────────────
