@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
 import { useAdminMutations } from '@/hooks/useAdmin';
 
-const API_URL = '';
+const API_URL = (((import.meta as any).env?.VITE_API_URL as string) || '').replace(/\/$/, '');
 
 const NotificationManager: React.FC = () => {
     const { allUsers, socket, user: adminUser } = useAppContext();

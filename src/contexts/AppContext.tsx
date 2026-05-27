@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { io as socketIOClient, Socket } from 'socket.io-client';
-const API_URL = ''; // Relative path for Vite proxy
+const API_URL = (((import.meta as any).env?.VITE_API_URL as string) || '').replace(/\/$/, '');
 import { toast } from '@/components/ui/use-toast';
 
 export interface CryptoPrice {
