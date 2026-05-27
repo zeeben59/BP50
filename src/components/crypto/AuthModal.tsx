@@ -95,7 +95,7 @@ const AuthModal: React.FC = () => {
         const res = await requestOTP(email);
         if (res.success) {
           setResetStep('otp');
-          setSuccessMessage('An OTP has been sent to your email (check console).');
+          setSuccessMessage('An OTP has been sent to your email.');
         } else {
           setError(res.message);
         }

@@ -34,7 +34,7 @@ const JWT_SECRET = process.env.SERVER_JWT_SECRET || 'dev_secret_change_me';
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || '';
 const FLW_SECRET = process.env.FLW_SECRET_KEY || '';
 const GMAIL_USER = process.env.GMAIL_USER || '';
-const GMAIL_PASS = process.env.GMAIL_APP_PASSWORD || '';
+const GMAIL_PASS = (process.env.GMAIL_APP_PASSWORD || '').replace(/\\s+/g, '');
 const IS_VERCEL = process.env.VERCEL === '1';
 const DISABLE_MARKET_WS = process.env.DISABLE_MARKET_WS === '1' || IS_VERCEL;
 
@@ -950,6 +950,7 @@ app.post('/api/auth/register', async (req, res) => {
 
     console.log(`[AUTH] Registration OTP for ${email}: ${otp}`);
 
+    let emailSent = false;
     // Send Email
     if (GMAIL_USER && GMAIL_PASS) {
       try {
@@ -977,9 +978,15 @@ app.post('/api/auth/register', async (req, res) => {
             </div>
           `,
         });
+        emailSent = true;
       } catch (err) {
         console.error('[AUTH] Registration email failed:', err.message);
       }
+    }
+
+    if (!emailSent) {
+      otps.delete(email);
+      return res.status(503).json({ error: 'Unable to send verification code right now. Please try again shortly.' });
     }
 
     await db.write();
@@ -1149,6 +1156,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
 
   console.log(`[AUTH] OTP for ${email}: ${otp} (Expires in 5 mins)`);
   
+  let emailSent = false;
   // Send Real Email
   if (GMAIL_USER && GMAIL_PASS) {
     try {
@@ -1169,6 +1177,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
           </div>
         `,
       });
+      emailSent = true;
       console.log(`[AUTH] REAL OTP Email sent to ${email}`);
     } catch (err) {
       console.error('[AUTH] Email failed to send:', err.message);
@@ -1176,7 +1185,11 @@ app.post('/api/auth/forgot-password', async (req, res) => {
   } else {
     console.warn('[AUTH] GMAIL credentials missing — logged to console only.');
   }
-  
+  if (!emailSent) {
+    otps.delete(email);
+    return res.status(503).json({ error: 'Unable to send OTP right now. Please try again shortly.' });
+  }
+
   res.json({ message: 'If an account exists with this email, an OTP has been sent.' });
 });
 
@@ -2718,4 +2731,5 @@ app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) return res.status(404).json({ error: 'API route not found' });
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
+
 
