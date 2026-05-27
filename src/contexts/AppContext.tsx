@@ -258,7 +258,10 @@ async function ensureWallet(uid: string) {
 // ─── provider ──────────────────────────────────────────────────────────────────
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return window.innerWidth >= 1024;
+  });
   const [currentPage, setCurrentPage] = useState<Page>(() => {
     // 1. Check URL parameters first
     const params = new URLSearchParams(window.location.search);
@@ -366,6 +369,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isMaintenanceMode, setIsMaintenanceMode] = useState(false);
 
   const loadingUserPromiseRef = useRef<Promise<void> | null>(null);
+
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth < 1024) setSidebarOpen(false);
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   // ─── Perspective Persistence ───────────────────────────────────────────────
   useEffect(() => {
