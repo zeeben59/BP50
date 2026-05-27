@@ -29,7 +29,7 @@ const { authenticator } = OTPAuth;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = process.env.SERVER_PORT || 3000;
+const PORT = process.env.PORT || process.env.SERVER_PORT || 3000;
 const JWT_SECRET = process.env.SERVER_JWT_SECRET || 'dev_secret_change_me';
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || '';
 const FLW_SECRET = process.env.FLW_SECRET_KEY || '';
@@ -2708,3 +2708,4 @@ app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) return res.status(404).json({ error: 'API route not found' });
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
+
