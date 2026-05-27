@@ -2,7 +2,7 @@ services:
   - type: web
     name: crypto-trading-secure-24
     env: node
-    plan: starter
+    plan: free
     buildCommand: npm ci && npm run build
     startCommand: npm run server
     autoDeploy: true
@@ -29,3 +29,4 @@ services:
         sync: false
       - key: FLW_SECRET_KEY
         sync: false
+
