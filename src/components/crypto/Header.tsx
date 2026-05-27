@@ -93,7 +93,7 @@ const Header: React.FC = () => {
               {showNotifications && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)} />
-                  <div className="absolute right-0 mt-4 w-96 glass-premium border-white/10 rounded-3xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
+                  <div className="absolute right-0 mt-4 w-[min(24rem,calc(100vw-1rem))] glass-premium border-white/10 rounded-3xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
                     <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
                       <div>
                         <h3 className="text-white font-black text-lg tracking-tight">Signal Feed</h3>
@@ -156,7 +156,7 @@ const Header: React.FC = () => {
 
             <div className="h-8 w-px bg-white/10 hidden sm:block" />
 
-            <div className="flex items-center gap-4 group cursor-pointer pl-1 py-1 pr-4 rounded-2xl hover:bg-white/5 transition-all ring-1 ring-white/5 hover:ring-white/10">
+            <div className="flex items-center gap-2 sm:gap-4 group cursor-pointer pl-1 py-1 pr-2 sm:pr-4 rounded-2xl hover:bg-white/5 transition-all ring-1 ring-white/5 hover:ring-white/10">
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-sm font-black text-white shadow-lg overflow-hidden border border-white/10 group-hover:scale-105 transition-transform">
                 {user?.username?.[0].toUpperCase() || 'U'}
               </div>

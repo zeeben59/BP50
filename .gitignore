@@ -28,3 +28,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Runtime data (do not commit)
+server/data.json
+server/backups/
