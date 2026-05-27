@@ -1058,6 +1058,35 @@ app.post('/api/auth/login', async (req, res) => {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
   
+  if (row.status === 'unverified') {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    otps.set(email, { otp, expires: Date.now() + 10 * 60 * 1000 });
+
+    let emailSent = false;
+    if (GMAIL_USER && GMAIL_PASS) {
+      try {
+        await sendMailWithTimeout({
+          from: `"B50 Trade Support" <${GMAIL_USER}>`,
+          to: email,
+          subject: "Verify Your B50 Trade Account",
+          text: `Your verification code is: ${otp}. This code expires in 10 minutes.`,
+        });
+        emailSent = true;
+      } catch (err) {
+        console.error('[AUTH] Resend verification email failed:', err.message);
+      }
+    }
+
+    if (!emailSent) otps.delete(email);
+    return res.status(403).json({
+      error: 'UNVERIFIED_EMAIL',
+      verificationRequired: true,
+      message: emailSent
+        ? 'Your account is not verified. We sent a new verification code to your email.'
+        : 'Your account is not verified, but we could not send a new code right now. Please try again shortly.',
+    });
+  }
+
   if (row.status !== 'active') {
     await logSecurityEvent('FAILED_LOGIN', `Attempted login to inactive account: ${email} (${row.status})`, req.ip, row.id);
     return res.status(401).json({ error: `Account is ${row.status}` });

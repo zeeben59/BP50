@@ -55,6 +55,12 @@ const AuthModal: React.FC = () => {
           setSuccessMessage('Please enter your 2FA token.');
           return;
         }
+        if (res === 'UNVERIFIED_EMAIL') {
+          setAuthMode('register');
+          setRegisterStep('verify');
+          setSuccessMessage('Your account is not verified yet. Enter the code sent to your email.');
+          return;
+        }
         if (res !== true) setError(typeof res === 'string' ? res : 'Invalid credentials');
       } else if (authMode === 'register') {
         if (registerStep === 'form') {
