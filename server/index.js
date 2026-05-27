@@ -35,6 +35,8 @@ const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || '';
 const FLW_SECRET = process.env.FLW_SECRET_KEY || '';
 const GMAIL_USER = process.env.GMAIL_USER || '';
 const GMAIL_PASS = (process.env.GMAIL_APP_PASSWORD || '').replace(/\\s+/g, '');
+const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+const RESEND_FROM = process.env.RESEND_FROM || GMAIL_USER || 'no-reply@example.com';
 const IS_VERCEL = process.env.VERCEL === '1';
 const DISABLE_MARKET_WS = process.env.DISABLE_MARKET_WS === '1' || IS_VERCEL;
 
@@ -51,6 +53,41 @@ async function sendMailWithTimeout(mailOptions, timeoutMs = 8000) {
     mailTransporter.sendMail(mailOptions),
     new Promise((_, reject) => setTimeout(() => reject(new Error('Email send timeout')), timeoutMs)),
   ]);
+}
+
+async function sendViaResend({ to, subject, html, text }) {
+  if (!RESEND_API_KEY) throw new Error('RESEND_API_KEY missing');
+  const resp = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: RESEND_FROM,
+      to: [to],
+      subject,
+      html,
+      text,
+    }),
+  });
+  if (!resp.ok) {
+    const body = await resp.text().catch(() => '');
+    throw new Error(`Resend failed (${resp.status}): ${body}`);
+  }
+}
+
+async function sendTransactionalEmail(mailOptions) {
+  if (RESEND_API_KEY) {
+    await sendViaResend({
+      to: mailOptions.to,
+      subject: mailOptions.subject,
+      html: mailOptions.html,
+      text: mailOptions.text,
+    });
+    return;
+  }
+  await sendMailWithTimeout(mailOptions);
 }
 
 const app = express();
@@ -954,7 +991,7 @@ app.post('/api/auth/register', async (req, res) => {
     // Send Email
     if (GMAIL_USER && GMAIL_PASS) {
       try {
-        await sendMailWithTimeout({
+        await sendTransactionalEmail({
           from: `"B50 Trade Support" <${GMAIL_USER}>`,
           to: email,
           subject: "Activate Your B50 Trade Account",
@@ -986,7 +1023,7 @@ app.post('/api/auth/register', async (req, res) => {
 
     if (!emailSent) {
       otps.delete(email);
-      return res.status(503).json({ error: 'Unable to send verification code right now. Please try again shortly.' });
+      return res.status(503).json({ error: 'Unable to send verification code right now. Configure RESEND_API_KEY on Render Free or use a paid SMTP-capable plan.' });
     }
 
     await db.write();
@@ -1065,7 +1102,7 @@ app.post('/api/auth/login', async (req, res) => {
     let emailSent = false;
     if (GMAIL_USER && GMAIL_PASS) {
       try {
-        await sendMailWithTimeout({
+        await sendTransactionalEmail({
           from: `"B50 Trade Support" <${GMAIL_USER}>`,
           to: email,
           subject: "Verify Your B50 Trade Account",
@@ -1189,7 +1226,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
   // Send Real Email
   if (GMAIL_USER && GMAIL_PASS) {
     try {
-      await sendMailWithTimeout({
+      await sendTransactionalEmail({
         from: `"CryptoSim Security" <${GMAIL_USER}>`,
         to: email,
         subject: "Your OTP for Password Reset",
@@ -1216,7 +1253,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
   }
   if (!emailSent) {
     otps.delete(email);
-    return res.status(503).json({ error: 'Unable to send OTP right now. Please try again shortly.' });
+    return res.status(503).json({ error: 'Unable to send OTP right now. Configure RESEND_API_KEY on Render Free or use a paid SMTP-capable plan.' });
   }
 
   res.json({ message: 'If an account exists with this email, an OTP has been sent.' });
@@ -2760,5 +2797,6 @@ app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) return res.status(404).json({ error: 'API route not found' });
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
+
 
 
