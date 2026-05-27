@@ -203,6 +203,18 @@ export interface Notification {
 const AppContext = createContext<AppContextType>({} as AppContextType);
 export const useAppContext = () => useContext(AppContext);
 
+async function fetchJsonWithTimeout(url: string, options: RequestInit, timeoutMs = 15000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    const json = await response.json().catch(() => ({}));
+    return { response, json };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 // ─── helpers ───────────────────────────────────────────────────────────────────
 
 async function fetchUserRow(uid: string): Promise<User | null> {
@@ -640,8 +652,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!email || !username || !password) return 'Missing fields';
     const cleanEmail = email.trim().toLowerCase();
     try {
-      const resp = await fetch(`${API_URL}/api/auth/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: cleanEmail, username, password }) });
-      const json = await resp.json();
+      const { response: resp, json } = await fetchJsonWithTimeout(
+        `${API_URL}/api/auth/register`,
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: cleanEmail, username, password }) }
+      );
       if (!resp.ok) { toast({ title: 'Registration Failed', description: json.error || 'Registration failed', variant: 'destructive' }); return json.error || 'Registration failed'; }
 
       if (json.verificationRequired) {
@@ -664,12 +678,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const verifyRegistration = useCallback(async (email: string, otp: string): Promise<{ success: boolean; message: string }> => {
     const cleanEmail = email.trim().toLowerCase();
     try {
-      const resp = await fetch(`${API_URL}/api/auth/verify-registration`, {
+      const { response: resp, json } = await fetchJsonWithTimeout(`${API_URL}/api/auth/verify-registration`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: cleanEmail, otp })
       });
-      const json = await resp.json();
       if (!resp.ok) return { success: false, message: json.error || 'Verification failed' };
 
       const { user, token } = json;
@@ -696,12 +709,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const login = useCallback(async (email: string, password: string, otp?: string): Promise<true | string> => {
     if (!email || !password) return 'Missing fields';
     try {
-      const resp = await fetch(`${API_URL}/api/auth/login`, {
+      const { response: resp, json } = await fetchJsonWithTimeout(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, otp })
       });
-      const json = await resp.json();
       if (!resp.ok) {
         if (json.error === '2FA_REQUIRED') return '2FA_REQUIRED';
         toast({ title: 'Login Failed', description: json.error || 'Login failed', variant: 'destructive' });

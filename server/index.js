@@ -41,7 +41,17 @@ const DISABLE_MARKET_WS = process.env.DISABLE_MARKET_WS === '1' || IS_VERCEL;
 const mailTransporter = nodemailer.createTransport({
   service: 'gmail',
   auth: { user: GMAIL_USER, pass: GMAIL_PASS },
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 15000,
 });
+
+async function sendMailWithTimeout(mailOptions, timeoutMs = 8000) {
+  return Promise.race([
+    mailTransporter.sendMail(mailOptions),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Email send timeout')), timeoutMs)),
+  ]);
+}
 
 const app = express();
 
@@ -943,7 +953,7 @@ app.post('/api/auth/register', async (req, res) => {
     // Send Email
     if (GMAIL_USER && GMAIL_PASS) {
       try {
-        await mailTransporter.sendMail({
+        await sendMailWithTimeout({
           from: `"B50 Trade Support" <${GMAIL_USER}>`,
           to: email,
           subject: "Activate Your B50 Trade Account",
@@ -1142,7 +1152,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
   // Send Real Email
   if (GMAIL_USER && GMAIL_PASS) {
     try {
-      await mailTransporter.sendMail({
+      await sendMailWithTimeout({
         from: `"CryptoSim Security" <${GMAIL_USER}>`,
         to: email,
         subject: "Your OTP for Password Reset",
