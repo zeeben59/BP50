@@ -37,6 +37,9 @@ const GMAIL_USER = process.env.GMAIL_USER || '';
 const GMAIL_PASS = (process.env.GMAIL_APP_PASSWORD || '').replace(/\s+/g, '');
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
 const RESEND_FROM = process.env.RESEND_FROM || GMAIL_USER || 'no-reply@example.com';
+const BREVO_API_KEY = process.env.BREVO_API_KEY || '';
+const BREVO_SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || GMAIL_USER || 'zeeben59@gmail.com';
+const BREVO_SENDER_NAME = process.env.BREVO_SENDER_NAME || 'B50 Trade';
 const IS_VERCEL = process.env.VERCEL === '1';
 const DISABLE_MARKET_WS = process.env.DISABLE_MARKET_WS === '1' || IS_VERCEL;
 
@@ -77,8 +80,40 @@ async function sendViaResend({ to, subject, html, text }) {
   }
 }
 
+async function sendViaBrevo({ to, subject, html, text }) {
+  if (!BREVO_API_KEY) throw new Error('BREVO_API_KEY missing');
+  const resp = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'api-key': BREVO_API_KEY,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({
+      sender: { name: BREVO_SENDER_NAME, email: BREVO_SENDER_EMAIL },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html,
+      textContent: text,
+    }),
+  });
+  if (!resp.ok) {
+    const body = await resp.text().catch(() => '');
+    throw new Error(`Brevo failed (${resp.status}): ${body}`);
+  }
+}
+
 async function sendTransactionalEmail(mailOptions) {
   try {
+    if (BREVO_API_KEY) {
+      await sendViaBrevo({
+        to: mailOptions.to,
+        subject: mailOptions.subject,
+        html: mailOptions.html,
+        text: mailOptions.text,
+      });
+      return;
+    }
     if (RESEND_API_KEY) {
       await sendViaResend({
         to: mailOptions.to,
@@ -92,7 +127,7 @@ async function sendTransactionalEmail(mailOptions) {
       await sendMailWithTimeout(mailOptions);
       return;
     }
-    throw new Error('No email service configured (missing RESEND_API_KEY or GMAIL credentials)');
+    throw new Error('No email service configured (missing BREVO_API_KEY, RESEND_API_KEY or GMAIL credentials)');
   } catch (err) {
     // If in development mode or if explicitly bypassed, log a visual warning and allow the flow to succeed
     const isDev = process.env.NODE_ENV !== 'production' || process.env.DEV_BYPASS_EMAIL === '1';
