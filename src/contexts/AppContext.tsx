@@ -727,6 +727,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       });
       if (!resp.ok) {
         if (json.error === '2FA_REQUIRED') return '2FA_REQUIRED';
+        if (json.error === 'UNVERIFIED_EMAIL') return 'UNVERIFIED_EMAIL';
         toast({ title: 'Login Failed', description: json.error || 'Login failed', variant: 'destructive' });
         return json.error || 'Login failed';
       }

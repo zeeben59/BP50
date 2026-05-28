@@ -34,7 +34,7 @@ const JWT_SECRET = process.env.SERVER_JWT_SECRET || 'dev_secret_change_me';
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || '';
 const FLW_SECRET = process.env.FLW_SECRET_KEY || '';
 const GMAIL_USER = process.env.GMAIL_USER || '';
-const GMAIL_PASS = (process.env.GMAIL_APP_PASSWORD || '').replace(/\\s+/g, '');
+const GMAIL_PASS = (process.env.GMAIL_APP_PASSWORD || '').replace(/\s+/g, '');
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
 const RESEND_FROM = process.env.RESEND_FROM || GMAIL_USER || 'no-reply@example.com';
 const IS_VERCEL = process.env.VERCEL === '1';
@@ -78,16 +78,46 @@ async function sendViaResend({ to, subject, html, text }) {
 }
 
 async function sendTransactionalEmail(mailOptions) {
-  if (RESEND_API_KEY) {
-    await sendViaResend({
-      to: mailOptions.to,
-      subject: mailOptions.subject,
-      html: mailOptions.html,
-      text: mailOptions.text,
-    });
-    return;
+  try {
+    if (RESEND_API_KEY) {
+      await sendViaResend({
+        to: mailOptions.to,
+        subject: mailOptions.subject,
+        html: mailOptions.html,
+        text: mailOptions.text,
+      });
+      return;
+    }
+    if (GMAIL_USER && GMAIL_PASS) {
+      await sendMailWithTimeout(mailOptions);
+      return;
+    }
+    throw new Error('No email service configured (missing RESEND_API_KEY or GMAIL credentials)');
+  } catch (err) {
+    // If in development mode or if explicitly bypassed, log a visual warning and allow the flow to succeed
+    const isDev = process.env.NODE_ENV !== 'production' || process.env.DEV_BYPASS_EMAIL === '1';
+    if (isDev) {
+      console.warn('\n┌────────────────────────────────────────────────────────┐');
+      console.warn('│  [DEV ONLY] EMAIL SENDING BYPASSED                     │');
+      console.warn(`│  To:      ${(mailOptions.to || '').padEnd(44)} │`);
+      console.warn(`│  Subject: ${(mailOptions.subject || '').padEnd(44)} │`);
+      
+      const textToDisplay = mailOptions.text || 
+        (mailOptions.html ? mailOptions.html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() : '');
+      
+      if (textToDisplay) {
+        console.warn(`│  Content: ${textToDisplay.slice(0, 44).padEnd(44)} │`);
+        if (textToDisplay.length > 44) {
+          console.warn(`│           ${textToDisplay.slice(44, 88).padEnd(44)} │`);
+        }
+      }
+      console.warn('│                                                        │');
+      console.warn('│  Please use the OTP code printed in the logs above.    │');
+      console.warn('└────────────────────────────────────────────────────────┘\n');
+      return; // Resolve successfully to bypass the failure in dev!
+    }
+    throw err; // Rethrow in production
   }
-  await sendMailWithTimeout(mailOptions);
 }
 
 const app = express();
@@ -222,6 +252,7 @@ const defaultData = {
   financial_transactions: [],
   alerts: [],
   notifications: [],
+  pending_otps: [],
   settings: { maintenanceMode: false, trading_halt: false }
 };
 const file = path.join(__dirname, 'data.json');
@@ -257,7 +288,8 @@ async function initDb() {
     const collections = [
       'users', 'wallets', 'crypto_balances', 'transactions', 'withdrawal_requests',
       'reports', 'positions', 'trades', 'payments', 'audit_logs', 'security_logs',
-      'activity_stream', 'financial_transactions', 'alerts', 'settings', 'notifications'
+      'activity_stream', 'financial_transactions', 'alerts', 'settings', 'notifications',
+      'pending_otps'
     ];
     
     collections.forEach(key => {
@@ -582,7 +614,32 @@ const SYMBOL_MAP = {
 // In-memory price store
 const livePrices = new Map();
 const price24hData = new Map(); // { open, high, low, volume }
-const otps = new Map(); // email -> { otp, expires }
+// ─── Persistent OTP Helpers (DB-backed, survives server restarts) ──────────────
+function getStoredOtp(email) {
+  db.data.pending_otps = db.data.pending_otps || [];
+  // Clean up expired OTPs while we're here
+  const now = Date.now();
+  db.data.pending_otps = db.data.pending_otps.filter(o => o.expires > now);
+  return db.data.pending_otps.find(o => o.email === email.toLowerCase().trim()) || null;
+}
+
+async function setStoredOtp(email, otp, expiresMs) {
+  db.data.pending_otps = db.data.pending_otps || [];
+  const cleanEmail = email.toLowerCase().trim();
+  // Remove any existing OTP for this email
+  db.data.pending_otps = db.data.pending_otps.filter(o => o.email !== cleanEmail);
+  db.data.pending_otps.push({ email: cleanEmail, otp, expires: Date.now() + expiresMs });
+  await db.write();
+}
+
+async function deleteStoredOtp(email) {
+  db.data.pending_otps = db.data.pending_otps || [];
+  db.data.pending_otps = db.data.pending_otps.filter(o => o.email !== email.toLowerCase().trim());
+  await db.write();
+}
+
+// Legacy in-memory map kept as fast cache; DB is the source of truth
+const otps = new Map(); // email -> { otp, expires } (fast cache, non-authoritative)
 
 // Initialize from CoinGecko as fallback, then switch to Binance
 const COINGECKO_API = 'https://api.coingecko.com/api/v3';
@@ -983,16 +1040,14 @@ app.post('/api/auth/register', async (req, res) => {
 
     // Generate Verification OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    otps.set(email, { otp, expires: Date.now() + 10 * 60 * 1000 }); // 10 mins
 
     console.log(`[AUTH] Registration OTP for ${email}: ${otp}`);
 
     let emailSent = false;
     // Send Email
-    if (GMAIL_USER && GMAIL_PASS) {
-      try {
-        await sendTransactionalEmail({
-          from: `"B50 Trade Support" <${GMAIL_USER}>`,
+    try {
+      await sendTransactionalEmail({
+          from: RESEND_FROM,
           to: email,
           subject: "Activate Your B50 Trade Account",
           text: `Welcome to B50 Trade! Your verification code is: ${otp}. This code expires in 10 minutes.`,
@@ -1014,17 +1069,25 @@ app.post('/api/auth/register', async (req, res) => {
               </div>
             </div>
           `,
-        });
-        emailSent = true;
-      } catch (err) {
-        console.error('[AUTH] Registration email failed:', err.message);
-      }
+      });
+      emailSent = true;
+    } catch (err) {
+      console.error('[AUTH] Registration email failed:', err.message);
     }
 
     if (!emailSent) {
-      otps.delete(email);
+      // Rollback: remove the unverified user we just added to memory
+      const addedIdx = db.data.users.findIndex(u => u.email.toLowerCase() === email);
+      if (addedIdx !== -1 && db.data.users[addedIdx].status === 'unverified') {
+        db.data.users.splice(addedIdx, 1);
+      }
       return res.status(503).json({ error: 'Unable to send verification code right now. Configure RESEND_API_KEY on Render Free or use a paid SMTP-capable plan.' });
     }
+
+    // Persist OTP to DB (survives server restarts)
+    await setStoredOtp(email, otp, 10 * 60 * 1000); // 10 mins
+    // Also keep in-memory cache for fast lookups
+    otps.set(email, { otp, expires: Date.now() + 10 * 60 * 1000 });
 
     await db.write();
     console.log(`[DEBUG] Database write completed for registration of ${email}`);
@@ -1041,7 +1104,11 @@ app.post('/api/auth/verify-registration', async (req, res) => {
     if (!rawEmail || !otp) return res.status(400).json({ error: 'Missing email or code' });
     const email = rawEmail.toLowerCase().trim();
 
-    const stored = otps.get(email);
+    // Check in-memory cache first, then fall back to DB-persisted OTP
+    let stored = otps.get(email);
+    if (!stored || stored.expires < Date.now()) {
+      stored = getStoredOtp(email);
+    }
     if (!stored || stored.expires < Date.now() || stored.otp !== otp) {
       return res.status(400).json({ error: 'Invalid or expired verification code' });
     }
@@ -1070,6 +1137,7 @@ app.post('/api/auth/verify-registration', async (req, res) => {
 
     await db.write();
     otps.delete(email);
+    await deleteStoredOtp(email);
 
     const token = signToken(user);
     const safeUser = { id: user.id, email: user.email, username: user.username, role: user.role, status: user.status, risk_score: user.risk_score, created_at: user.created_at };
@@ -1097,24 +1165,25 @@ app.post('/api/auth/login', async (req, res) => {
   
   if (row.status === 'unverified') {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    otps.set(email, { otp, expires: Date.now() + 10 * 60 * 1000 });
 
     let emailSent = false;
-    if (GMAIL_USER && GMAIL_PASS) {
-      try {
-        await sendTransactionalEmail({
-          from: `"B50 Trade Support" <${GMAIL_USER}>`,
+    try {
+      await sendTransactionalEmail({
+          from: RESEND_FROM,
           to: email,
           subject: "Verify Your B50 Trade Account",
           text: `Your verification code is: ${otp}. This code expires in 10 minutes.`,
-        });
-        emailSent = true;
-      } catch (err) {
-        console.error('[AUTH] Resend verification email failed:', err.message);
-      }
+      });
+      emailSent = true;
+    } catch (err) {
+      console.error('[AUTH] Resend verification email failed:', err.message);
     }
 
-    if (!emailSent) otps.delete(email);
+    if (emailSent) {
+      await setStoredOtp(email, otp, 10 * 60 * 1000);
+      otps.set(email, { otp, expires: Date.now() + 10 * 60 * 1000 });
+    }
+
     return res.status(403).json({
       error: 'UNVERIFIED_EMAIL',
       verificationRequired: true,
@@ -1218,18 +1287,17 @@ app.post('/api/auth/forgot-password', async (req, res) => {
   }
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  otps.set(email, { otp, expires: Date.now() + 5 * 60 * 1000 }); // 5 mins
 
-  console.log(`[AUTH] OTP for ${email}: ${otp} (Expires in 5 mins)`);
+  console.log(`[AUTH] OTP for ${email}: ${otp} (Expires in 10 mins)`);
   
   let emailSent = false;
   // Send Real Email
-  if (GMAIL_USER && GMAIL_PASS) {
-    try {
-      await sendTransactionalEmail({
-        from: `"CryptoSim Security" <${GMAIL_USER}>`,
+  try {
+    await sendTransactionalEmail({
+        from: RESEND_FROM,
         to: email,
         subject: "Your OTP for Password Reset",
+        text: `Your B50 Trade password reset code is: ${otp}. This code expires in 10 minutes. If you did not request this, please secure your account immediately.`,
         html: `
           <div style="font-family: sans-serif; padding: 20px; background: #0b0e23; color: #fff; border-radius: 12px;">
             <h2 style="color: #10b981;">Password Reset</h2>
@@ -1237,7 +1305,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
             <div style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #fff; margin: 30px 0; text-align: center; background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: 8px; border: 1px dashed #10b981;">
               ${otp}
             </div>
-            <p style="color: #94a3b8; font-size: 14px;">This code will expire in <b>5 minutes</b>.</p>
+            <p style="color: #94a3b8; font-size: 14px;">This code will expire in <b>10 minutes</b>.</p>
             <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;" />
             <p style="color: #64748b; font-size: 11px;">If you did not request this, please secure your account immediately.</p>
           </div>
@@ -1248,13 +1316,14 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     } catch (err) {
       console.error('[AUTH] Email failed to send:', err.message);
     }
-  } else {
-    console.warn('[AUTH] GMAIL credentials missing — logged to console only.');
-  }
   if (!emailSent) {
-    otps.delete(email);
     return res.status(503).json({ error: 'Unable to send OTP right now. Configure RESEND_API_KEY on Render Free or use a paid SMTP-capable plan.' });
   }
+
+  // Persist OTP to DB (survives server restarts)
+  await setStoredOtp(email, otp, 10 * 60 * 1000); // 10 mins
+  // Also keep in-memory cache for fast lookups
+  otps.set(email, { otp, expires: Date.now() + 10 * 60 * 1000 });
 
   res.json({ message: 'If an account exists with this email, an OTP has been sent.' });
 });
@@ -1264,10 +1333,15 @@ app.post('/api/auth/verify-otp', async (req, res) => {
   if (!rawEmail || !otp) return res.status(400).json({ error: 'Email and OTP are required' });
   const email = rawEmail.toLowerCase().trim();
 
-  const stored = otps.get(email);
+  // Check in-memory cache first, then fall back to DB-persisted OTP
+  let stored = otps.get(email);
+  if (!stored || stored.expires < Date.now()) {
+    stored = getStoredOtp(email);
+  }
   if (!stored) return res.status(400).json({ error: 'OTP expired or not found' });
   if (stored.expires < Date.now()) {
     otps.delete(email);
+    await deleteStoredOtp(email);
     return res.status(400).json({ error: 'OTP expired' });
   }
   if (stored.otp !== otp) return res.status(400).json({ error: 'Invalid OTP' });
@@ -1280,7 +1354,11 @@ app.post('/api/auth/reset-password', async (req, res) => {
   if (!rawEmail || !otp || !newPassword) return res.status(400).json({ error: 'Missing fields' });
   const email = rawEmail.toLowerCase().trim();
 
-  const stored = otps.get(email);
+  // Check in-memory cache first, then fall back to DB-persisted OTP
+  let stored = otps.get(email);
+  if (!stored || stored.expires < Date.now()) {
+    stored = getStoredOtp(email);
+  }
   if (!stored || stored.expires < Date.now() || stored.otp !== otp) {
     return res.status(400).json({ error: 'Invalid or expired OTP' });
   }
@@ -1294,6 +1372,7 @@ app.post('/api/auth/reset-password', async (req, res) => {
   await db.write();
 
   otps.delete(email);
+  await deleteStoredOtp(email);
   console.log(`[AUTH] Password reset successfully for ${email}`);
   res.json({ message: 'Password reset successfully' });
 });
@@ -2797,6 +2876,7 @@ app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) return res.status(404).json({ error: 'API route not found' });
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
+
 
 
 
