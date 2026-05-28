@@ -22,47 +22,6 @@
       "last_seen": "2026-05-12T15:31:17.036Z",
       "is_online": false,
       "current_socket": null
-    },
-    {
-      "id": "3a0fc38a-be22-4d99-8005-f3a926230473",
-      "email": "monwubabenedict07@gmail.com",
-      "username": "ben",
-      "password_hash": "$2a$10$LSuJY8.cOuU8PLlSzPRi0e0wG0HSKyu92r.mdI26mqtk3zpyrAYVK",
-      "role": "user",
-      "permissions": {},
-      "two_factor": {
-        "enabled": false,
-        "secret": null
-      },
-      "status": "unverified",
-      "accountStatus": "unverified",
-      "freezeUntil": null,
-      "freezeReason": null,
-      "loginAttempts": 0,
-      "risk_score": 0,
-      "created_at": "2026-05-28T11:41:31.078Z"
-    },
-    {
-      "id": "2d252f92-2ea5-48a3-b875-fd2f8e9028b5",
-      "email": "zeeben59@gmail.com",
-      "username": "benne",
-      "password_hash": "$2a$10$A5wGerhmAov8U3ipAeDU..uwvUcaNZjvMTqDHkwApVBg8o4n13.vm",
-      "role": "user",
-      "permissions": {},
-      "two_factor": {
-        "enabled": false,
-        "secret": null
-      },
-      "status": "active",
-      "accountStatus": "active",
-      "freezeUntil": null,
-      "freezeReason": null,
-      "loginAttempts": 0,
-      "risk_score": 0,
-      "created_at": "2026-05-28T11:42:56.000Z",
-      "last_seen": "2026-05-28T11:43:18.889Z",
-      "is_online": false,
-      "current_socket": null
     }
   ],
   "wallets": [
@@ -72,14 +31,6 @@
       "demo_balance": 995875,
       "savings_balance": 0,
       "available_balance": 1000000,
-      "frozen_balance": 0
-    },
-    {
-      "id": "b6e1070c-ce44-497d-a586-4c3b5d66e3ad",
-      "user_id": "2d252f92-2ea5-48a3-b875-fd2f8e9028b5",
-      "demo_balance": 500,
-      "savings_balance": 0,
-      "available_balance": 500,
       "frozen_balance": 0
     }
   ],
@@ -100,11 +51,5 @@
     "maintenanceMode": false,
     "trading_halt": false
   },
-  "pending_otps": [
-    {
-      "email": "monwubabenedict07@gmail.com",
-      "otp": "419208",
-      "expires": 1779969274295
-    }
-  ]
+  "pending_otps": []
 }
