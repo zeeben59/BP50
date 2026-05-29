@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { io as socketIOClient, Socket } from 'socket.io-client';
-const API_URL = (((import.meta as any).env?.VITE_API_URL as string) || '').replace(/\/$/, '');
+const API_URL = (((import.meta as any).env?.VITE_API_URL as string) || window.location.origin).replace(/\/$/, '');
 import { toast } from '@/components/ui/use-toast';
 
 export interface CryptoPrice {
@@ -719,11 +719,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const login = useCallback(async (email: string, password: string, otp?: string): Promise<true | string> => {
     if (!email || !password) return 'Missing fields';
+    const cleanEmail = email.trim().toLowerCase();
     try {
       const { response: resp, json } = await fetchJsonWithTimeout(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, otp })
+        body: JSON.stringify({ email: cleanEmail, password, otp })
       });
       if (!resp.ok) {
         if (json.error === '2FA_REQUIRED') return '2FA_REQUIRED';

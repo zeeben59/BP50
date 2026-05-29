@@ -12,7 +12,11 @@ services:
       - key: DISABLE_MARKET_WS
         value: "1"
       - key: SERVER_JWT_SECRET
-        generateValue: true
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
       - key: VITE_API_URL
         value: ""
       - key: VITE_SUPABASE_URL
