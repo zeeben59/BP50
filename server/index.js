@@ -985,47 +985,86 @@ let bybitPingInterval = null;
 
 const priceLastUpdated = new Map();
 
+// ─── Bybit REST API with multi-mirror fallback & exponential backoff ──────────
+const BYBIT_MIRRORS = [
+  'https://api.bybit.com/v5/market/tickers?category=spot',
+  'https://api.bytick.com/v5/market/tickers?category=spot',
+  'https://api.bybit.nl/v5/market/tickers?category=spot',
+];
+let bybitPollFailCount = 0;
+let bybitPollSilenced = false;
+const BYBIT_MAX_BACKOFF_MS = 120000; // 2 min cap
+const BYBIT_BASE_INTERVAL_MS = 3000;
+
 async function pollBybitPrices() {
-  try {
-    const url = 'https://api.bytick.com/v5/market/tickers?category=spot';
-    const resp = await fetch(url);
-    if (!resp.ok) {
-      throw new Error(`Bybit HTTP error: ${resp.status}`);
-    }
-    const json = await resp.json();
-    if (json.retCode !== 0 || !json.result || !json.result.list) {
-      return;
-    }
+  let lastError = null;
 
-    const tickers = json.result.list;
-    const now = Date.now();
-    for (const data of tickers) {
-      const symbolStr = data.symbol;
-      const info = SYMBOL_MAP[symbolStr];
-      if (!info) continue;
-
-      const price = parseFloat(data.lastPrice);
-      if (isNaN(price)) continue;
-
-      livePrices.set(info.symbol, price);
-      priceLastUpdated.set(info.symbol, now);
-
-      io.emit('price:update', {
-        symbol: info.symbol,
-        price,
-        timestamp: now,
-        name: info.name,
-        change_24h: (parseFloat(data.price24hPcnt) || 0) * 100,
-        high_24h: parseFloat(data.highPrice24h) || price,
-        low_24h: parseFloat(data.lowPrice24h) || price,
-        volume_24h: parseFloat(data.turnover24h) || 0,
-        image_url: coinGeckoCache.imageMap[info.symbol] || '',
+  for (const mirror of BYBIT_MIRRORS) {
+    try {
+      const resp = await fetch(mirror, {
+        headers: { 'User-Agent': 'B50Trade/1.0' },
+        signal: AbortSignal.timeout(8000),
       });
+      if (!resp.ok) {
+        lastError = new Error(`Bybit HTTP ${resp.status} from ${new URL(mirror).hostname}`);
+        continue; // try next mirror
+      }
+      const json = await resp.json();
+      if (json.retCode !== 0 || !json.result || !json.result.list) {
+        continue;
+      }
 
-      updateFloatingPnL(info.symbol, price);
+      // ── Success path ──
+      if (bybitPollFailCount > 0) {
+        console.log(`[Bybit Poll] ✓ Recovered via ${new URL(mirror).hostname} after ${bybitPollFailCount} failures`);
+      }
+      bybitPollFailCount = 0;
+      bybitPollSilenced = false;
+
+      const tickers = json.result.list;
+      const now = Date.now();
+      for (const data of tickers) {
+        const symbolStr = data.symbol;
+        const info = SYMBOL_MAP[symbolStr];
+        if (!info) continue;
+
+        const price = parseFloat(data.lastPrice);
+        if (isNaN(price)) continue;
+
+        livePrices.set(info.symbol, price);
+        priceLastUpdated.set(info.symbol, now);
+
+        io.emit('price:update', {
+          symbol: info.symbol,
+          price,
+          timestamp: now,
+          name: info.name,
+          change_24h: (parseFloat(data.price24hPcnt) || 0) * 100,
+          high_24h: parseFloat(data.highPrice24h) || price,
+          low_24h: parseFloat(data.lowPrice24h) || price,
+          volume_24h: parseFloat(data.turnover24h) || 0,
+          image_url: coinGeckoCache.imageMap[info.symbol] || '',
+        });
+
+        updateFloatingPnL(info.symbol, price);
+      }
+      return; // done — don't try other mirrors
+    } catch (err) {
+      lastError = err;
+      continue; // try next mirror
     }
-  } catch (err) {
-    console.error('[Bybit Poll] Fallback polling error:', err.message);
+  }
+
+  // ── All mirrors failed ──
+  bybitPollFailCount++;
+
+  // Log first failure, then every 20th failure, then go silent
+  if (bybitPollFailCount === 1) {
+    console.warn(`[Bybit Poll] All mirrors failed: ${lastError?.message || 'unknown error'}. Prices will use synthetic micro-ticks.`);
+  } else if (bybitPollFailCount === 5) {
+    console.warn(`[Bybit Poll] Still failing after ${bybitPollFailCount} attempts (likely geo-blocked). Reducing poll frequency.`);
+  } else if (bybitPollFailCount % 100 === 0) {
+    console.warn(`[Bybit Poll] ${bybitPollFailCount} consecutive failures. Synthetic prices active.`);
   }
 }
 
@@ -1070,8 +1109,19 @@ setInterval(() => {
   }
 }, 2000);
 
-// Run fallback REST API polling every 3 seconds to guarantee real-time price stream in hosted environments
-setInterval(pollBybitPrices, 3000);
+// Adaptive polling: fast when working, backs off exponentially when blocked (caps at 2 min)
+let bybitPollTimer = null;
+function scheduleBybitPoll() {
+  const delay = bybitPollFailCount === 0
+    ? BYBIT_BASE_INTERVAL_MS
+    : Math.min(BYBIT_BASE_INTERVAL_MS * Math.pow(2, Math.min(bybitPollFailCount, 6)), BYBIT_MAX_BACKOFF_MS);
+  
+  bybitPollTimer = setTimeout(async () => {
+    await pollBybitPrices();
+    scheduleBybitPoll();
+  }, delay);
+}
+scheduleBybitPoll();
 
 function connectBybit() {
   if (DISABLE_MARKET_WS) {
