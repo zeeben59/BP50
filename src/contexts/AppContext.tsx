@@ -1002,14 +1002,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   useEffect(() => {
     const s = socketIOClient(API_URL, {
+      path: '/socket.io',
+      transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       timeout: 20000,
+      auth: {
+        token: typeof window !== 'undefined' ? localStorage.getItem('token') : undefined,
+      },
     });
     setSocket(s);
+    
+    // Expose socket for quick debugging in dev console
+    try { (window as any).__APP_SOCKET = s; } catch (e) {}
 
+    s.on('connect_error', (err: any) => {
+      console.error('[Socket] connect_error', err && (err.message || err));
+    });
     const handleJoin = () => {
       if (user?.id) {
         console.log('[Socket] Joining user room:', user.id);
